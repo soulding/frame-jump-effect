@@ -1,0 +1,41 @@
+# 微信小程序
+*.apkg
+*.wxapkg
+
+# 开发工具
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 日志
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 依赖
+node_modules/
+
+# 临时文件
+*.tmp
+*.temp
+
+# 用户配置
+project.private.config.json
+
+# 敏感信息
+.env
+.env.local
+.env.*.local
+
+# 构建输出
+dist/
+build/
+
+# 缓存
+.cache/
+.hbuilderx/

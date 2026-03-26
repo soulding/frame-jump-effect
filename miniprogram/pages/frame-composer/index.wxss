@@ -1,0 +1,190 @@
+/* pages/frame-composer/index.wxss */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+/* 顶部操作栏 */
+.header {
+  display: flex;
+  justify-content: space-around;
+  padding: 20rpx 30rpx;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.btn-select,
+.btn-frame {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 16rpx 32rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.btn-select:active,
+.btn-frame:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+.icon {
+  font-size: 32rpx;
+}
+
+/* 画布区域 */
+.canvas-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.main-canvas {
+  width: 100%;
+  max-width: 750rpx;
+  aspect-ratio: 3/4;
+  border-radius: 16rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.5);
+}
+
+/* 加载遮罩 */
+.loading-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 30rpx;
+  color: white;
+  font-size: 28rpx;
+}
+
+/* 引导遮罩 */
+.guide-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  text-align: center;
+}
+
+.guide-icon {
+  font-size: 120rpx;
+  margin-bottom: 40rpx;
+}
+
+.guide-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.guide-subtext {
+  font-size: 28rpx;
+  opacity: 0.8;
+  padding: 0 60rpx;
+  line-height: 1.6;
+}
+
+/* 底部控制栏 */
+.controls {
+  padding: 30rpx 40rpx;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.control-group {
+  margin-bottom: 20rpx;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-label {
+  display: block;
+  color: #aaa;
+  font-size: 24rpx;
+  margin-bottom: 10rpx;
+}
+
+slider {
+  --active-line-height: 8rpx;
+  --active-line-color: #667eea;
+  --handle-size: 32rpx;
+  --handle-color: #667eea;
+}
+
+/* 底部操作按钮 */
+.footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 30rpx 40rpx;
+  padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.btn-reset,
+.btn-save {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 20rpx 40rpx;
+  border: none;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.btn-reset {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+.btn-reset:active,
+.btn-save:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
