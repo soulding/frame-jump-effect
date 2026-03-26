@@ -1,5 +1,5 @@
 // pages/frame-composer/index.js
-import { ModelLoader } from '../../utils/bodypix-loader';
+import { WeChatAILoader } from '../../utils/wechat-ai-loader';
 import { ImageProcessor } from '../../utils/image-processor';
 import { FrameComposer } from '../../utils/frame-composer';
 import { GestureHandler } from '../../utils/gesture-handler';
@@ -67,14 +67,19 @@ Page({
   },
 
   /**
-   * 预加载模型（后台）
+   * 预加载 AI 模型（后台）
    */
   async preloadModel() {
     try {
-      this.model = await ModelLoader.getInstance();
-      console.log('BodyPix model preloaded');
+      this.model = await WeChatAILoader.getInstance();
+      console.log('WeChat AI model preloaded, type:', this.model.type);
     } catch (error) {
-      console.error('Model preload failed:', error);
+      console.error('AI model preload failed:', error);
+      wx.showToast({ 
+        title: 'AI 初始化失败', 
+        icon: 'none',
+        duration: 2000
+      });
     }
   },
 
@@ -114,10 +119,11 @@ Page({
       // 2. 获取图片信息
       const imageInfo = await ImageProcessor.getImageInfo(compressedPath);
       
-      // 3. 加载模型
+      // 3. 加载 AI 模型
       this.setLoading(true, '加载 AI 模型...');
       if (!this.model) {
-        this.model = await ModelLoader.getInstance();
+        this.model = await WeChatAILoader.getInstance();
+        console.log('AI model loaded, type:', this.model.type);
       }
       
       // 4. 执行分割
@@ -130,6 +136,8 @@ Page({
         imageInfo.width,
         imageInfo.height
       );
+      
+      console.log('Segmentation completed, subjectPath:', subjectPath);
       
       const duration = Date.now() - startTime;
       console.log(`Segmentation completed in ${duration}ms`);

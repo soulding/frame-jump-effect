@@ -9,5 +9,11 @@
     "navigationBarTextStyle": "white"
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "plugins": {
+    "aiPlugin": {
+      "version": "1.0.0",
+      "provider": "wx7c8d593b2c3a7703"
+    }
+  }
 }
