@@ -12,20 +12,27 @@
   justify-content: space-around;
   padding: 20rpx 30rpx;
   background: rgba(0, 0, 0, 0.3);
+  gap: 10rpx;
 }
 
 .btn-select,
+.btn-type,
 .btn-frame {
   display: flex;
   align-items: center;
   gap: 10rpx;
-  padding: 16rpx 32rpx;
+  padding: 16rpx 24rpx;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 50rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: bold;
+  white-space: nowrap;
+}
+
+.btn-type {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 }
 
 .btn-select:active,

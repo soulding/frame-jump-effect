@@ -76,14 +76,15 @@ export class ImageProcessor {
    * @param {string} imagePath - 图片路径
    * @param {number} width - 图片宽度
    * @param {number} height - 图片高度
+   * @param {string} type - 分割类型 (person/pet/plant/object 等)
    * @returns {Promise<string>} - 透明背景图片路径
    */
-  static async segmentImage(model, imagePath, width, height) {
+  static async segmentImage(model, imagePath, width, height, type = 'person') {
     try {
-      console.log('Starting segmentation with model type:', model.type);
+      console.log(`Starting ${type} segmentation with model type:`, model.type);
       
-      // 调用 AI 分割
-      const result = await segmentPerson(model, imagePath);
+      // 调用 AI 分割（传入类型参数）
+      const result = await segmentImage(model, imagePath, type);
       console.log('Segmentation result:', result);
       
       // 微信 AI 或云函数已直接返回透明图

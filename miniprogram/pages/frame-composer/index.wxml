@@ -6,6 +6,10 @@
       <text class="icon">📷</text>
       选择照片
     </button>
+    <button class="btn-type" bindtap="showTypePicker">
+      <text class="icon">{{segmentTypes.find(t => t.key === segmentType)?.icon || '🎯'}}</text>
+      {{segmentTypes.find(t => t.key === segmentType)?.name || '选择类型'}}
+    </button>
     <button class="btn-frame" bindtap="showFramePicker">
       <text class="icon">🖼️</text>
       更换相框

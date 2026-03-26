@@ -3,6 +3,7 @@ import { WeChatAILoader } from '../../utils/wechat-ai-loader';
 import { ImageProcessor } from '../../utils/image-processor';
 import { FrameComposer } from '../../utils/frame-composer';
 import { GestureHandler } from '../../utils/gesture-handler';
+import { SegmentType, getAllSegmentTypes, getSegmentConfig } from '../../utils/segmentation-types';
 
 Page({
   data: {
@@ -18,7 +19,10 @@ Page({
     },
     currentFrame: 'classic',
     canvasWidth: 375,
-    canvasHeight: 500
+    canvasHeight: 500,
+    segmentType: 'person', // 当前分割类型
+    segmentTypes: [], // 可选的分割类型列表
+    showTypePicker: false
   },
 
   // 实例引用
@@ -31,6 +35,16 @@ Page({
   onLoad() {
     this.initCanvas();
     this.preloadModel();
+    this.loadSegmentTypes();
+  },
+
+  /**
+   * 加载分割类型列表
+   */
+  loadSegmentTypes() {
+    const types = getAllSegmentTypes();
+    this.setData({ segmentTypes: types });
+    console.log('可用分割类型:', types.map(t => t.name).join(', '));
   },
 
   /**
@@ -84,6 +98,37 @@ Page({
   },
 
   /**
+   * 选择分割类型
+   */
+  showTypePicker() {
+    const types = this.data.segmentTypes;
+    const itemList = types.map(t => `${t.icon} ${t.name}`);
+    
+    wx.showActionSheet({
+      itemList: itemList,
+      success: (res) => {
+        const selectedType = types[res.tapIndex].key;
+        const config = getSegmentConfig(selectedType);
+        
+        this.setData({ 
+          segmentType: selectedType,
+          'transform.scale': config.defaultScale || 1.0
+        });
+        
+        wx.showToast({ 
+          title: `已切换到${config.name}`, 
+          icon: 'success' 
+        });
+        
+        // 如果已有图片，重新处理
+        if (this.data.imagePath) {
+          this.processImage(this.data.imagePath);
+        }
+      }
+    });
+  },
+
+  /**
    * 选择照片
    */
   async chooseImage() {
@@ -126,18 +171,23 @@ Page({
         console.log('AI model loaded, type:', this.model.type);
       }
       
-      // 4. 执行分割
-      this.setLoading(true, 'AI 抠图中...');
+      // 4. 执行分割（根据选择的类型）
+      const segmentType = this.data.segmentType;
+      const config = getSegmentConfig(segmentType);
+      
+      this.setLoading(true, `AI 正在识别${config.name}...`);
       const startTime = Date.now();
       
       const subjectPath = await ImageProcessor.segmentImage(
         this.model,
         compressedPath,
         imageInfo.width,
-        imageInfo.height
+        imageInfo.height,
+        segmentType // 传入分割类型
       );
       
-      console.log('Segmentation completed, subjectPath:', subjectPath);
+      const duration = Date.now() - startTime;
+      console.log(`${config.name}分割完成，耗时：${duration}ms, subjectPath:`, subjectPath);
       
       const duration = Date.now() - startTime;
       console.log(`Segmentation completed in ${duration}ms`);

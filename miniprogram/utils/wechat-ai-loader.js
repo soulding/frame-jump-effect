@@ -17,8 +17,20 @@ const WeChatAIConfig = {
   // AI 插件 ID（需要在小程序后台配置）
   pluginId: 'your-ai-plugin-id',
   
-  // 分割模式
-  segmentType: 'person', // 'person' | 'face' | 'body'
+  // 默认分割模式
+  defaultSegmentType: 'person',
+  
+  // 支持的分割类型
+  supportedTypes: [
+    'person',    // 人像
+    'face',      // 人脸
+    'pet',       // 宠物
+    'animal',    // 动物
+    'plant',     // 植物
+    'object',    // 通用物体
+    'vehicle',   // 车辆
+    'food'       // 食物
+  ],
   
   // 输出配置
   output: {
@@ -95,29 +107,47 @@ export class WeChatAILoader {
           plugin: plugin,
           
           /**
-           * 执行人体分割
+           * 执行图像分割（支持多种类型）
            * @param {string} imagePath - 图片路径
-           * @returns {Promise<{maskPath: string, imageUrl: string}>}
+           * @param {string} type - 分割类型 (person/pet/plant/object 等)
+           * @returns {Promise<{maskPath: string, imageUrl: string, type: string}>}
            */
-          segmentPerson: async (imagePath) => {
+          segmentImage: async (imagePath, type = 'person') => {
             return new Promise((resolve, reject) => {
-              plugin.segmentPerson({
+              // 根据类型选择对应的插件 API
+              const apiMethod = getPluginApiMethod(type);
+              
+              if (!plugin[apiMethod]) {
+                reject(new Error(`插件不支持 ${type} 类型分割`));
+                return;
+              }
+              
+              plugin[apiMethod]({
                 imagePath: imagePath,
-                outputType: 'mask', // 输出掩码或透明图
+                outputType: 'mask',
                 success: (res) => {
                   resolve({
                     maskPath: res.maskPath,
                     imageUrl: res.imageUrl,
                     width: res.width,
-                    height: res.height
+                    height: res.height,
+                    type: type,
+                    confidence: res.confidence
                   });
                 },
                 fail: (err) => {
-                  console.error('AI segmentation failed:', err);
+                  console.error(`AI segmentation failed (${type}):`, err);
                   reject(err);
                 }
               });
             });
+          },
+          
+          /**
+           * 兼容方法：人体分割
+           */
+          segmentPerson: async (imagePath) => {
+            return this.segmentImage(imagePath, 'person');
           }
         });
       } catch (error) {
@@ -200,18 +230,52 @@ export class WeChatAILoader {
 }
 
 /**
- * 执行人体分割（便捷函数）
+ * 执行图像分割（便捷函数）
  */
-export async function segmentPerson(model, imagePath) {
+export async function segmentImage(model, imagePath, type = 'person') {
   if (!model) {
     throw new Error('AI 模型未初始化');
   }
 
   try {
-    const result = await model.segmentPerson(imagePath);
-    return result;
+    if (model.segmentImage) {
+      // 新版 API，支持多种类型
+      const result = await model.segmentImage(imagePath, type);
+      return result;
+    } else if (model.segmentPerson && type === 'person') {
+      // 兼容旧版 API
+      const result = await model.segmentPerson(imagePath);
+      return result;
+    } else {
+      throw new Error(`AI 模型不支持 ${type} 类型分割`);
+    }
   } catch (error) {
     console.error('Segmentation failed:', error);
     throw error;
   }
+}
+
+/**
+ * 兼容函数：人体分割
+ */
+export async function segmentPerson(model, imagePath) {
+  return segmentImage(model, imagePath, 'person');
+}
+
+/**
+ * 获取插件 API 方法名
+ */
+function getPluginApiMethod(type) {
+  const methodMap = {
+    'person': 'segmentPerson',
+    'face': 'segmentFace',
+    'pet': 'segmentPet',
+    'animal': 'segmentAnimal',
+    'plant': 'segmentPlant',
+    'object': 'segmentObject',
+    'vehicle': 'segmentVehicle',
+    'food': 'segmentFood'
+  };
+  
+  return methodMap[type] || 'segmentObject';
 }

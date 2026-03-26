@@ -43,15 +43,29 @@ async function getAccessToken() {
 }
 
 /**
- * 人体分割主函数
+ * 图像分割主函数（支持多种类型）
  */
-async function segmentPerson(imageBase64) {
+async function segmentImage(imageBase64, type = 'person') {
   try {
     // 获取 access_token
     const accessToken = await getAccessToken();
-    console.log('获取到 access_token');
+    console.log('获取到 access_token，类型:', type);
 
-    // 调用人体分割 API
+    // 映射分割类型到 API 参数
+    const apiTypeMap = {
+      'person': 'person',      // 人像
+      'face': 'face',          // 人脸
+      'pet': 'pet',            // 宠物
+      'animal': 'animal',      // 动物
+      'plant': 'plant',        // 植物
+      'object': 'object',      // 通用物体
+      'vehicle': 'vehicle',    // 车辆
+      'food': 'food'           // 食物
+    };
+
+    const apiType = apiTypeMap[type] || 'object';
+
+    // 调用微信 AI 分割 API
     const params = {
       access_token: accessToken
     };
@@ -60,7 +74,7 @@ async function segmentPerson(imageBase64) {
       AI_CONFIG.segmentUrl,
       {
         img: imageBase64,
-        type: 'person' // 人像分割
+        type: apiType
       },
       { params }
     );
@@ -71,7 +85,7 @@ async function segmentPerson(imageBase64) {
     if (result.errcode === 0) {
       // 上传结果到云存储
       const fileExtension = 'png';
-      const cloudPath = `segmented/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExtension}`;
+      const cloudPath = `segmented/${type}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExtension}`;
       
       const uploadResult = await cloud.uploadFile({
         cloudPath: cloudPath,
@@ -84,7 +98,9 @@ async function segmentPerson(imageBase64) {
         success: true,
         imageUrl: uploadResult.fileID,
         width: result.width || 0,
-        height: result.height || 0
+        height: result.height || 0,
+        type: type,
+        confidence: result.confidence || 1.0
       };
     } else {
       console.error('AI 分割失败:', result);
@@ -120,7 +136,7 @@ exports.main = async (event, context) => {
   console.log('收到分割请求，类型:', type);
 
   try {
-    const result = await segmentPerson(imageBase64);
+    const result = await segmentImage(imageBase64, type);
     return result;
   } catch (error) {
     console.error('云函数执行失败:', error);
