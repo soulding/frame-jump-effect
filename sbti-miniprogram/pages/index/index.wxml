@@ -1,0 +1,20 @@
+<view class="container">
+  <view class="hero card">
+    <view class="eyebrow">MBTI 已经过时，SBTI 来了</view>
+    <view class="title">SBTI 人格测试</view>
+    <view class="subtitle">31 道题，看懂真实的自己</view>
+    
+    <view class="tips">
+      <view class="tip-item">⚠️ 全选完才会放行</view>
+      <view class="tip-item">⚠️ 仅供娱乐，别太当真</view>
+      <view class="tip-item">⚠️ 结果可以保存图片分享</view>
+    </view>
+
+    <button class="btn-start" type="warn" bindtap="startTest">开始测试</button>
+  </view>
+
+  <view class="footer">
+    <view class="credit">原作者：B 站@蛆肉儿串儿</view>
+    <view class="disclaimer">本测试仅供娱乐</view>
+  </view>
+</view>

@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="card result-card">
+    <view class="result-header">
+      <view class="type-code">{{result.type}}</view>
+      <view class="type-name">{{result.typeCn}}</view>
+      <view class="type-intro">{{result.intro}}</view>
+    </view>
+
+    <view class="match-section">
+      <view class="match-label">匹配度</view>
+      <view class="match-value">{{result.match}}%</view>
+      <view class="match-bar">
+        <view class="match-fill" style="width: {{result.match}}%"></view>
+      </view>
+    </view>
+
+    <view class="desc-section">
+      <view class="section-title">人格解读</view>
+      <view class="desc-text">{{result.desc}}</view>
+    </view>
+
+    <view class="dimensions-section">
+      <view class="section-title">十五维度评分</view>
+      <view class="dim-grid">
+        <view class="dim-item" wx:for="{{dimList}}" wx:key="key">
+          <view class="dim-name">{{item.name}}</view>
+          <view class="dim-score">{{item.score}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="action-section">
+      <button class="btn-save" type="warn" bindtap="saveImage">保存图片</button>
+      <button class="btn-retest" bindtap="retest">重新测试</button>
+    </view>
+  </view>
+
+  <view class="disclaimer">
+    <view>⚠️ 本测试仅供娱乐</view>
+    <view>别拿它当诊断、面试、相亲、分手、招魂、算命或人生判决书</view>
+  </view>
+</view>
